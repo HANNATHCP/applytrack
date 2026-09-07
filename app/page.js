@@ -106,16 +106,25 @@ export default function Home() {
 
       <button
         type="button"
-        onClick={() => {
-        console.log({
-          company: companyName,
-          role: role,
-          status: status,
-      });
+        onClick={async () => {
+            const response = await fetch("/api/applications",{
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                company: companyName,
+                role: role,
+                status: status,
+              }),
+            });
+            const data = await response.json();
+            console.log(data);
       }}
       className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
       Save Application
       </button>
+      
       <button
         type="button"
         onClick={() => setShowForm(false)}
