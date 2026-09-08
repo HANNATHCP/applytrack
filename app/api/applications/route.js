@@ -27,3 +27,24 @@ export async function POST(request) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    await connectDB();
+
+    const applications = await Application.find().sort({
+      createdAt: -1,
+    });
+
+    return Response.json(applications);
+  } catch (error) {
+    return Response.json(
+      {
+        message: "Failed to fetch applications",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

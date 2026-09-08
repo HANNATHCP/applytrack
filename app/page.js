@@ -1,27 +1,34 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("Wishlist");
-  const applications = [
-  {
-    company: "Google",
-    role: "Frontend Developer",
-    status: "Applied",
-  },
-  {
-    company: "Microsoft",
-    role: "Software Engineer",
-    status: "Interview",
-  },
-  {
-    company: "TCS",
-    role: "Full Stack Developer",
-    status: "Wishlist",
-  },
-];
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+  async function fetchApplications() {
+    try {
+      const response = await fetch("/api/applications");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch applications");
+      }
+
+      const data = await response.json();
+
+      setApplications(data);
+    } catch (error) {
+      setError("Unable to load applications");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  fetchApplications();
+  }, []);
   const totalApplications = applications.length;
   const appliedApplications = applications.filter(
   (application) => application.status === "Applied"
@@ -57,6 +64,13 @@ export default function Home() {
           </div>
       </div>
       <h2 className="mt-10 text-xl font-semibold">Recent Applications</h2>
+      {loading && (
+          <p className="mt-4 text-sm text-slate-400">Loading applications...please wait</p>
+      )}
+
+      {error && (
+          <p className="mt-4 text-sm text-red-400">{error}</p>
+      )}
       <p className="mt-1 text-sm text-slate-400">Keep track of your latest job applications.</p>
 
       <button onClick={() =>  setShowForm(!showForm)} className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
@@ -104,26 +118,30 @@ export default function Home() {
       </select>
       </label>
 
-      <button
-        type="button"
-        onClick={async () => {
-            const response = await fetch("/api/applications",{
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                company: companyName,
-                role: role,
-                status: status,
-              }),
-            });
-            const data = await response.json();
-            console.log(data);
-      }}
-      className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
-      Save Application
-      </button>
+     <button
+        type="button" onClick={async () => {
+        const response = await fetch("/api/applications", {
+          method: "POST",
+          headers: { "Content-Type": "application/json",},
+          body: JSON.stringify({
+          company: companyName,
+          role: role,
+          status: status,
+        }),
+      });
+
+    const data = await response.json();
+
+    setApplications((previousApplications) => [
+      data,
+      ...previousApplications,
+    ]);
+
+    setCompanyName("");
+    setRole("");
+    setStatus("Wishlist");
+    setShowForm(false);
+    }}className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950"> Save Application </button>
       
       <button
         type="button"
@@ -135,7 +153,7 @@ export default function Home() {
       )}
         <ul className="mt-6 space-y-2">
           {applications.map((application) => (
-            <li key={application.company} className="rounded-lg border border-slate-800 px-4 py-3" >
+            <li key={application._id} className="rounded-lg border border-slate-800 px-4 py-3">
               <h3 className="font-semibold">{application.company}</h3>
               <p className="text-sm text-slate-400">{application.role}</p>
               <span className="mt-2 inline-block rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">{application.status}</span>
