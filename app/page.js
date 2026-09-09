@@ -36,6 +36,31 @@ export default function Home() {
   const interviewApplications = applications.filter(
   (application) => application.status === "Interview"
   ).length;
+
+
+  // Function to delete an application by ID 
+  async function deleteApplication(id) {
+  const response = await fetch("/api/applications", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
+
+  if (!response.ok) {
+    console.log("Failed to delete application");
+    return;
+  }
+
+  setApplications((previousApplications) =>
+    previousApplications.filter(
+      (application) => application._id !== id
+    )
+  );
+}
   return (
     <>
     <header className="border-b border-slate-800 px-8 py-5">
@@ -157,6 +182,7 @@ export default function Home() {
               <h3 className="font-semibold">{application.company}</h3>
               <p className="text-sm text-slate-400">{application.role}</p>
               <span className="mt-2 inline-block rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">{application.status}</span>
+              <button type="button" onClick={() => deleteApplication(application._id)} className="ml-3 rounded-lg border border-red-500 px-3 py-1 text-xs text-red-400">Delete</button>
             </li>
             ))}
         </ul>

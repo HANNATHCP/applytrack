@@ -48,3 +48,38 @@ export async function GET() {
     );
   }
 }
+export async function DELETE(request) {
+  try {
+    await connectDB();
+
+    const { id } = await request.json();
+
+    const deletedApplication = await Application.findByIdAndDelete(id);
+
+    if (!deletedApplication) {
+      return Response.json(
+        {
+          message: "Application not found",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    return Response.json({
+      message: "Application deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return Response.json(
+      {
+        message: "Failed to delete application",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
