@@ -83,3 +83,49 @@ export async function DELETE(request) {
     );
   }
 }
+
+//update the application status or adding edit option in ui applicaction
+export async function PATCH(request) {
+  try {
+    await connectDB();
+
+    const { id, company, role, status } = await request.json();
+
+    const updatedApplication = await Application.findByIdAndUpdate(
+      id,
+      {
+        company,
+        role,
+        status,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedApplication) {
+      return Response.json(
+        {
+          message: "Application not found",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    return Response.json(updatedApplication);
+  } catch (error) {
+    console.error(error);
+
+    return Response.json(
+      {
+        message: "Failed to update application",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

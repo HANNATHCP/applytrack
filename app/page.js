@@ -8,6 +8,7 @@ export default function Home() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState(null);
   useEffect(() => {
   async function fetchApplications() {
     try {
@@ -61,6 +62,16 @@ export default function Home() {
     )
   );
 }
+
+//Function to update an application 
+function editApplication(application) {
+  setCompanyName(application.company);
+  setRole(application.role);
+  setStatus(application.status);
+  setEditingId(application._id);
+  setShowForm(true);
+}
+
   return (
     <>
     <header className="border-b border-slate-800 px-8 py-5">
@@ -143,30 +154,52 @@ export default function Home() {
       </select>
       </label>
 
+     {/* save application button */}
      <button
-        type="button" onClick={async () => {
+        type="button"
+        onClick={async () => {
+        const isEditing = editingId !== null;
         const response = await fetch("/api/applications", {
-          method: "POST",
-          headers: { "Content-Type": "application/json",},
+            method: isEditing ? "PATCH" : "POST",
+            headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
+          id: editingId,
           company: companyName,
           role: role,
           status: status,
-        }),
-      });
+      }),
+    });
 
     const data = await response.json();
 
-    setApplications((previousApplications) => [
-      data,
-      ...previousApplications,
-    ]);
+    if (!response.ok) {
+      console.log(data.message);
+      return;
+    }
+
+    if (isEditing) {
+      setApplications((previousApplications) =>
+        previousApplications.map((application) =>
+          application._id === editingId ? data : application
+        )
+      );
+    } else {
+      setApplications((previousApplications) => [
+        data,
+        ...previousApplications,
+      ]);
+    }
 
     setCompanyName("");
     setRole("");
     setStatus("Wishlist");
+    setEditingId(null);
     setShowForm(false);
-    }}className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950"> Save Application </button>
+    }} className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
+      {editingId ? "Update Application" : "Save Application"}
+    </button>
       
       <button
         type="button"
@@ -182,7 +215,10 @@ export default function Home() {
               <h3 className="font-semibold">{application.company}</h3>
               <p className="text-sm text-slate-400">{application.role}</p>
               <span className="mt-2 inline-block rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">{application.status}</span>
-              <button type="button" onClick={() => deleteApplication(application._id)} className="ml-3 rounded-lg border border-red-500 px-3 py-1 text-xs text-red-400">Delete</button>
+              <button type="button" onClick={() => editApplication(application)} className="ml-3 rounded-lg border border-blue-500 px-3 py-1 text-xs text-blue-400">
+                Edit</button>
+              <button type="button" onClick={() => deleteApplication(application._id)} className="ml-3 rounded-lg border border-red-500 px-3 py-1 text-xs text-red-400">
+                Delete</button>
             </li>
             ))}
         </ul>
