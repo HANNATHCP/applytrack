@@ -8,6 +8,7 @@ export default function Home() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
   const [editingId, setEditingId] = useState(null);
   useEffect(() => {
   async function fetchApplications() {
@@ -109,13 +110,18 @@ function editApplication(application) {
       )}
       <p className="mt-1 text-sm text-slate-400">Keep track of your latest job applications.</p>
 
-      <button onClick={() =>  setShowForm(!showForm)} className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
+      <button onClick={() => { setShowForm(!showForm);
+          setFormError("");}}  className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
       Add Application </button>
 
       
       {showForm && (
       <div className="mt-6 space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-5">
-      
+      {formError && (
+        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+         {formError}</p>
+      )}
+
       <div>
         <h3 className="text-lg font-semibold">Add a new application</h3>
         <p className="mt-1 text-sm text-slate-400">
@@ -158,7 +164,15 @@ function editApplication(application) {
      <button
         type="button"
         onClick={async () => {
+          if (!companyName.trim() || !role.trim()) {
+            setFormError("Please enter both company name and job role.");
+            return;
+        }
+
+        setFormError("");
+
         const isEditing = editingId !== null;
+
         const response = await fetch("/api/applications", {
             method: isEditing ? "PATCH" : "POST",
             headers: {
