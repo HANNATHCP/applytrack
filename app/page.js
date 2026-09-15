@@ -273,20 +273,69 @@ function editApplication(application) {
       </button>
       </div>
       )}
+  
 
-        <ul className="mt-6 space-y-2">
-          {applications.map((application) => (
-            <li key={application._id} className="rounded-lg border border-slate-800 px-4 py-3">
-              <h3 className="font-semibold">{application.company}</h3>
-              <p className="text-sm text-slate-400">{application.role}</p>
-              <span className="mt-2 inline-block rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">{application.status}</span>
-              <button type="button" onClick={() => editApplication(application)} className="ml-3 rounded-lg border border-blue-500 px-3 py-1 text-xs text-blue-400">
-                Edit</button>
-              <button type="button" onClick={() => deleteApplication(application._id)} className="ml-3 rounded-lg border border-red-500 px-3 py-1 text-xs text-red-400">
-                Delete</button>
-            </li>
-            ))}
-        </ul>
+    {!loading && applications.length === 0 ? (
+      <div className="mt-6 rounded-xl border border-dashed border-slate-700 bg-slate-900/50 px-6 py-10 text-center">
+      <div className="text-4xl">📋</div>
+
+      <h3 className="mt-4 text-lg font-semibold">
+      No applications yet
+      </h3>
+
+      <p className="mt-2 text-sm text-slate-400">
+      Start tracking your placement journey by adding your first application.
+      </p>
+
+      <button
+      type="button"
+      onClick={() => {
+        setShowForm(true);
+        setFormError("");
+        setSuccessMessage("");
+      }}
+      className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950"
+      >
+      Add Your First Application
+      </button>
+      </div>
+  ) : (
+      <ul className="mt-6 space-y-2">
+        {applications.map((application) => (
+        <li
+          key={application._id}
+          className="rounded-lg border border-slate-800 px-4 py-3"
+        >
+        <h3 className="font-semibold">{application.company}</h3>
+
+        <p className="text-sm text-slate-400">
+          {application.role}
+        </p>
+
+        <span className="mt-2 inline-block rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">
+          {application.status}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => editApplication(application)}
+          className="ml-3 rounded-lg border border-blue-500 px-3 py-1 text-xs text-blue-400"
+        >
+          Edit
+        </button>
+
+        <button
+          type="button"
+          onClick={() => deleteApplication(application._id)}
+          className="ml-3 rounded-lg border border-red-500 px-3 py-1 text-xs text-red-400"
+        >
+          Delete
+        </button>
+      </li>
+    ))}
+    </ul>
+    )}
+        
                   
     </main>
     </>
