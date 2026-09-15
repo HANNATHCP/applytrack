@@ -9,6 +9,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [formError, setFormError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [editingId, setEditingId] = useState(null);
   useEffect(() => {
   async function fetchApplications() {
@@ -42,6 +43,14 @@ export default function Home() {
 
   // Function to delete an application by ID 
   async function deleteApplication(id) {
+  const confirmed = window.confirm(
+  "Are you sure you want to delete this application?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
   const response = await fetch("/api/applications", {
     method: "DELETE",
     headers: {
@@ -110,9 +119,17 @@ function editApplication(application) {
       )}
       <p className="mt-1 text-sm text-slate-400">Keep track of your latest job applications.</p>
 
-      <button onClick={() => { setShowForm(!showForm);
-          setFormError("");}}  className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
+      <button onClick={() => {
+          setShowForm(!showForm);
+          setFormError("");
+          setSuccessMessage("");
+      }} className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
       Add Application </button>
+      {successMessage && (
+        <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+        {successMessage}
+        </div>
+      )}
 
       
       {showForm && (
@@ -122,8 +139,13 @@ function editApplication(application) {
          {formError}</p>
       )}
 
+      
+
       <div>
-        <h3 className="text-lg font-semibold">Add a new application</h3>
+        <h3 className="text-lg font-semibold">
+          {editingId ? "Edit application" : "Add a new application"}
+        </h3>
+        
         <p className="mt-1 text-sm text-slate-400">
         Enter the details of a job application.
         </p>
@@ -189,7 +211,7 @@ function editApplication(application) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.log(data.message);
+      setFormError(data.message || "Something went wrong.");
       return;
     }
 
@@ -211,18 +233,34 @@ function editApplication(application) {
     setStatus("Wishlist");
     setEditingId(null);
     setShowForm(false);
+
+    setSuccessMessage(
+      isEditing
+        ? "Application updated successfully!"
+        : "Application added successfully!"
+    );
+
+    setTimeout(() => {
+    setSuccessMessage("");
+    }, 3000);
+
     }} className="mt-5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950">
       {editingId ? "Update Application" : "Save Application"}
     </button>
       
       <button
         type="button"
-        onClick={() => setShowForm(false)}
+        onClick={() => {
+          setShowForm(false);
+          setFormError("");
+          setSuccessMessage("");
+        }}
         className="ml-3 rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300">
         Cancel
       </button>
       </div>
       )}
+
         <ul className="mt-6 space-y-2">
           {applications.map((application) => (
             <li key={application._id} className="rounded-lg border border-slate-800 px-4 py-3">
