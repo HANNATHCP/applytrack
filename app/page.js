@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 export default function Home() {
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState("");
@@ -11,6 +13,15 @@ export default function Home() {
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [editingId, setEditingId] = useState(null);
+
+  useEffect(() => {
+  const hasVisited = localStorage.getItem("applytrack-visited");
+
+  if (!hasVisited) {
+    router.replace("/onboarding");
+  }
+  }, [router]);
+
   useEffect(() => {
   async function fetchApplications() {
     try {
@@ -79,6 +90,8 @@ function editApplication(application) {
   setRole(application.role);
   setStatus(application.status);
   setEditingId(application._id);
+  setFormError("");
+  setSuccessMessage("");
   setShowForm(true);
 }
 
@@ -145,7 +158,7 @@ function editApplication(application) {
         <h3 className="text-lg font-semibold">
           {editingId ? "Edit application" : "Add a new application"}
         </h3>
-        
+
         <p className="mt-1 text-sm text-slate-400">
         Enter the details of a job application.
         </p>
