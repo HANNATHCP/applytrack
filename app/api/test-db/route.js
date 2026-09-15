@@ -8,13 +8,14 @@ export async function GET() {
       message: "MongoDB connected successfully",
     });
   } catch (error) {
+    console.error("MongoDB connection error:", error);
+
     return Response.json(
       {
         message: "MongoDB connection failed",
+        error: error.message,
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
