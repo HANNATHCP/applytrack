@@ -1,14 +1,30 @@
 # ApplyTrack
 
-ApplyTrack is a full-stack job application tracking platform designed to help students organize and manage their placement journey.
+ApplyTrack is a full-stack job application tracking platform designed to help students organize, monitor, and manage their placement journey in one place.
+
+## Live Demo
+
+[View ApplyTrack Live](https://applytrack-kappa.vercel.app)
 
 ## Features
 
+- First-visit onboarding experience
 - Dashboard with application statistics
-- Add job application form
-- Company, role, and status tracking
-- Application status badges
+- Add new job applications
+- Edit existing applications
+- Delete applications with confirmation
+- Track company name, job role, and application status
+- Application statuses:
+  - Wishlist
+  - Applied
+  - Interview
+  - Offer
+  - Rejected
+- Dynamic application counts
+- Form validation and error handling
+- Success and error messages
 - Responsive dashboard layout
+- Persistent data storage using MongoDB Atlas
 
 ## Tech Stack
 
@@ -16,16 +32,27 @@ ApplyTrack is a full-stack job application tracking platform designed to help st
 - React
 - JavaScript
 - Tailwind CSS
-- MongoDB
 - Node.js
+- MongoDB Atlas
+- Mongoose
+- Vercel
 
-## Current Progress
+## Project Structure
 
-Day 1: Frontend dashboard and application form completed.
-
-## Getting Started
-
-Install dependencies:
-
-```bash
-npm install
+```text
+applytrack/
+├── app/
+│   ├── api/
+│   │   ├── applications/
+│   │   └── test-db/
+│   ├── onboarding/
+│   └── page.js
+├── lib/
+│   └── mongodb.js
+├── models/
+│   └── Application.js
+├── public/
+├── .env.local
+├── .gitignore
+├── package.json
+└── README.md
